@@ -1,11 +1,17 @@
-# touying-template
+# Reliable infractructure talk
 
-Touying template for online presentation.
+Link to the presentation: https://bluka.github.com/reliable-infra
 
-Link: https://touying-typ.github.io/touying-template/
+## Build and test
 
-## Use this template
+Install Typst and Touying manually, or with Nix from `./flake.nix` using:
 
-1. Click `Use this template` button to copy repo.
-2. Click `Settings -> Pages -> Branch -> None -> gh-pages -> Save` to enable github pages.
-3. Open link `your-name.github.io/repo-name` to start your presentation.
+```bash
+nix develop
+```
+
+Compile with:
+
+```bash
+touying compile main.typ --format html --font-paths fonts
+```

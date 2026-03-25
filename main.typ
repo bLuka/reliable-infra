@@ -6,7 +6,7 @@
 #import cosmos.clouds: *
 #import "@preview/nerd-icons:0.2.0": change-nerd-font, nf-icon
 #import "@preview/fletcher:0.5.8" as fletcher: node, edge
-#import fletcher.shapes: house, hexagon
+#import fletcher.shapes: brace
 
 #set text(font: "Open Sans", size: 22pt, top-edge: 0.6em, bottom-edge: 2em)
 #change-nerd-font("meslolgl nerd font")
@@ -50,20 +50,19 @@
   ),
 )
 
-#title-slide(extra: [
-  #grid(
-    columns: (1fr, 8em),
-    align: horizon,
-    column-gutter: 5pt,
-    [],
-    [
-      #set align(right)
-      #qr-code(
-        "github.com/bLuka/reliable-infra",
-        light-color: white.transparentize(100%),
-      )
-    ],
+#title-slide(extra: block(width: 100%)[
+  #set text(size: 18pt, weight: 700)
+  #set align(right)
+  #set par(spacing: 0em, leading: 0em)
+  Also find the presentation on: #h(14pt)
+  #v(21pt)
+  #qr-code(
+    "github.com/bLuka/reliable-infra",
+    height: 44%,
+    light-color: white.transparentize(100%),
   )
+
+  `bluka.github.io/reliable-infra` #h(14pt)
 ])
 
 == Different deployments paradigms <touying:hidden>
@@ -568,6 +567,8 @@
 #slide[
   In programming, the *imperative paradigm* consists of writing a program as a sequence of instructions: *it's a cookbook*.
 
+  #pause
+
   To deploy an on-premise infrastructure, there is a whole series of processes to follow in order to acquire, install, start, or maintain servers.
 ]
 
@@ -824,7 +825,7 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 
 // N'est PAS reproductible _stricto sensus_
 #slide[
-  *Terraform* allows you to declare and deploy infrastructure from code (literally _Infrastructure as Code_) using *HCL* language:
+  *Terraform* allows you to declare and deploy infrastructure from code using the _ad hoc_ *HCL* language:
 
   #pause
   #v(12pt)
@@ -835,7 +836,7 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
     ```hcl
 
     resource "aws_instance" "my_server" {
-      ami           = "ami-0c55b159cbfafe1f0"
+      ami           = "my-ami-id"
       instance_type = "t2.micro"
     }
     ```
@@ -900,7 +901,7 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 
   #h(0em)
 
-  What's the point of being here?
+  Why should I care about all of this?
 ]
 
 = In practice
@@ -957,6 +958,21 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
     #colbreak()
     #colbreak()
   ]
+
+  #speaker-note[
+    - on veut éviter sillo *dev* / sysadmin
+    - on veut que les devs contrôlent mieux l'env final
+    - dev plus iso prod possible = good
+
+    1. originellement, dev -> cahier des charges -> ops => source d'erreur
+    2. ensuite, environnements devs locaux + en + proches
+    3. idéal : les devs gèrent les environnements et leurs specs eux-mêmes au plus proche du code
+
+    Que se passe-t-il quand on se rend compte que les spec machine ne suivent pas ? On refait potentiellement toute la boucle
+    (c'est un cycle en v simplifié le schéma)
+
+    Est-ce qu'on pourrait pas simplifier les intermédiaires ?
+  ]
 ]
 
 == Workflows
@@ -999,12 +1015,13 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 ]
 
 #slide[
-  #set align(center)
+  #set align(left)
+  #set par(spacing: 0em, leading: 0.6em)
   #fletcher-diagram(
     node-stroke: .05em,
     node-inset: 10.6pt,
     node-fill: gradient.radial(blue.lighten(80%), blue, center: (30%, 20%), radius: 80%),
-    spacing: 3em,
+    spacing: 2.7em,
 
     // FRAME 1
 
@@ -1015,23 +1032,30 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
     edge(<lead>, <dev>, "-|>", align(center)[Discuss\ architecture], bend: 53deg, stroke: black.transparentize(10%)),
 
     node((2, 0), [Devs], radius: 2.8em, name: <dev>, fill: gradient.radial(blue.lighten(80%).transparentize(80%), blue.transparentize(80%), center: (30%, 20%), radius: 80%), stroke: black.transparentize(80%)),
+    pause,
 
     node((2.7, 1), [Ops], radius: 2.8em, name: <ops>, fill: gradient.radial(blue.lighten(80%).transparentize(80%), blue.transparentize(80%), center: (30%, 20%), radius: 80%), stroke: black.transparentize(80%)),
-    edge(<ops>, <dc>, "-|>", label-pos: 10%, align(left)[#highlight[Prepare and maintain\ infra]], bend: -30deg, stroke: black.transparentize(10%)),
-
+    pause,
     node((3.5, 0), [Datacenter], radius: 2.8em, name: <dc>, fill: gradient.radial(blue.lighten(80%).transparentize(80%), green.transparentize(80%), center: (30%, 20%), radius: 80%), stroke: black.transparentize(80%)),
+    edge(<ops>, <dc>, "-|>", label-pos: 10%, align(left)[#highlight[Prepare and maintain\ infra]], bend: -30deg, stroke: black.transparentize(10%)),
+    pause,
 
     edge(<dev>, <dc>, "-|>", align(center)[#highlight[Deploy resources]], bend: 45deg, stroke: black.transparentize(10%)),
     edge(<dc>, <dev>, "<..>", align(center)[#highlight[System tests]], bend: -12deg, stroke: black.transparentize(10%)),
+    pause,
     edge(<lead>, <dc>, "<..>", align(center)[], bend: -34deg, stroke: black.transparentize(10%)),
     edge(<dev>, <dc>, "<..>", align(center)[#highlight[Infra reviews]], bend: -34deg, stroke: black.transparentize(10%)),
+    pause,
+    node(enclose: (<biz>, <dc>), shape: brace.with(dir: right, length: 100% + 2em, size: 1.5em, sep: -0.4em)),
+    edge(<dev>, <biz>, "-", rotate(-90deg)[#align(center)[#highlight[End-to-end tests\ Feature environments]]], label-pos: -18.9em, label-sep: -1.6em, stroke: black.transparentize(100%), ),
+    pause,
   )
 
   #pause
 
   #place(bottom+left)[
   #set text(font: "libertinus serif", size: 48pt)
-    #h(0.5em) _DevOps_
+    _✨ DevOps ✨_
     #v(0.6em)
   ]
 ]
@@ -1041,15 +1065,23 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 #slide[
 ]
 
-== Gestion des risques
-
-=== Plans de continuité & reprise d'activité
-
-=== Gestion des « déploiements » d'infrastructure
-
-== Indicateur de réussite ?
+== Risk Management
 
 #slide[
+  === Business Continuity & Business Recovery Plans…
+
+  === Infrastructure Deployments Management…
+]
+
+== Key Performance Indicators, or KPI
+
+#slide[
+  === DORA Metrics
+]
+
+#focus-slide(align: center)[
+  #set text(font: "libertinus serif", size: 73pt)
+  _That's all, folks!_
 ]
 
 #show: appendix

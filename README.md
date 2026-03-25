@@ -1,6 +1,6 @@
 # Reliable infractructure talk
 
-Link to the presentation: https://bluka.github.com/reliable-infra
+Link to the presentation: [bluka.github.io/reliable-infra](https://bluka.github.io/reliable-infra)
 
 ## Build and test
 

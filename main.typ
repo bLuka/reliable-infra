@@ -1490,6 +1490,13 @@ It means to describe a *final state* rather than the steps to reach it.
     edge((-0.3, -1), (4.4, 1.5), stroke: (paint: red, thickness: 4pt)),
     edge((-0.3, 1.5), (4.4, -1), stroke: (paint: red, thickness: 4pt)),
   )
+
+  #speaker-note[
+    Que se passe-t-il quand on se rend compte que les spec machine ne suivent pas ? On refait potentiellement toute la boucle
+    (c'est un cycle en v simplifié le schéma)
+
+    Est-ce qu'on pourrait pas simplifier les intermédiaires ?
+  ]
 ]
 
 #slide[
@@ -1555,13 +1562,17 @@ It means to describe a *final state* rather than the steps to reach it.
   #speaker-note[
     C'est Robin qui en parle très bien et ça pourrait faire l'objet d'une présentation à part.
 
-    Ce sont les mesures de performance d'un projet et de l'intérêt d'un bon cycle de vie de release. On y travaille activement avec l'équipe PIC.
+    Ce sont les mesures de performance d'un projet et de l'intérêt d'avoir un bon cycle de vie de release. On y travaille activement avec l'équipe PIC.
   ]
 ]
 
 #focus-slide(align: top, config: config-page(fill: white, margin: 0em))[
   #figure(image("assets/thats all folks.svg", width: 101%))
   #place(bottom+right, figure(image("assets/bongolove.png", width: 10%)))
+
+  #speaker-note[
+    Ah, et pour boucler la boucle, cette présentation est intégralement générée via un langage de programmation déclaratif, Typst, que j'ai mentionné un peu plus haut :D
+  ]
 ]
 
 #show: appendix

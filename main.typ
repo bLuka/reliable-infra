@@ -40,7 +40,10 @@
 #show: metropolis-theme.with(
   aspect-ratio: "16-9",
   footer-right: none,
-  config-common(frozen-counters: (theorem-counter,)),
+  config-common(
+    frozen-counters: (theorem-counter,),
+    show-notes-on-second-screen: right,
+  ),
   config-info(
     title: [♻️ Reliable infrastructure deployments],
     subtitle: [From imperative to declarative & reproducible — A project lifecycle],
@@ -72,7 +75,23 @@
 }
 #components.adaptive-columns(outline(title: none, indent: 2em, depth: 1))
 
+#speaker-note[
+  Je vais essayer de parler des nouvelles pratiques dans la gestion des déploiements.
+
+  *Disclaimer :*
+
+  - Cette présentation n'est pas exhaustive
+  - Je vais faire des approximations pour simplifier
+  - Il y a certainement des personnes dans cette salle qui s'y connaissent mieux que moi
+
+  C'est un sujet que je trouve assez sexy, je pourrais déjà faire une conférence d'une heure et demie mais je vais vous épargner ça. On va faire court, si vous avez des question n'hésitez pas à m'interrompre, et si vous voulez en parler c'est quand vous voulez, où vous voulez.
+]
+
 = History
+
+#speaker-note[
+  Parlons un peu d'histoire de l'informatique
+]
 
 == History
 
@@ -81,10 +100,52 @@
   _Help me!_
 
   _My prod is down!_
+
+  #place(bottom+right, [
+    #set text(size: 22pt)
+    _— Alexander, sysadmin_
+
+    #set text(size: 18pt)
+    _(Or maybe)_
+  ])
+
+  #speaker-note[
+    « Merde ! Ma prod est cassée ! »
+
+    Qu'est-ce que je fais ?
+
+    - On *évalue* le *périmètre de la panne*, ce qui casse
+    - On *détermine* les *conditions* dans lesquelles ça *arrive*
+    - On *évalue* les *risques* possibles
+    - On *détermine* le *coût* pour *corriger* : temps de debug, nouveau déploiement…
+
+    Enfin, on *décide* de *l'action à prendre* et *quand.*
+
+    *Différents scénarios:*
+    Que se passe-t-il si elle est cassée…
+  ]
 ]
 
 #slide(composer: (1.2fr, 1fr))[
 
+  #only("1")[
+    #figure(image("assets/muppets_gulp.gif", width: 100%))
+  ]
+  #only("2")[
+    #figure(image("assets/muppets_shocked.gif", width: 100%))
+  ]
+  #only("3")[
+    #figure(image("assets/muppets_burn.gif", width: 100%))
+  ]
+  #only("4")[
+    #figure(image("assets/muppets_triggered.gif", width: 100%))
+  ]
+  #only("5")[
+    #figure(image("assets/muppets_sad.gif", width: 100%))
+  ]
+
+][
+  #meanwhile
 
 - Immediately after deployment
 
@@ -104,39 +165,64 @@
 
 - _But it *doesn't* work *only* on my machine_ #super[#strike[TM]]
 
-][
-  #meanwhile
-  #only("1")[
-    #figure(image("assets/muppets_gulp.gif", width: 100%))
-  ]
-  #only("2")[
-    #figure(image("assets/muppets_shocked.gif", width: 100%))
-  ]
-  #only("3")[
-    #figure(image("assets/muppets_burn.gif", width: 100%))
-  ]
-  #only("4")[
-    #figure(image("assets/muppets_triggered.gif", width: 100%))
-  ]
-  #only("5")[
-    #figure(image("assets/muppets_sad.gif", width: 100%))
+  #speaker-note[
+    + Au déploiement:
+      - facile, on tente de rollback hein ? Oui, mais si on avait changé de DB en même temps ?
+    + 4j :
+      - Est-ce que c'est vraiment lié au dernier déploiement ?
+      - Une panne lente ?
+      - Un changement _stateful_ ? 
+    + Au rollback :
+      - Un truc mal rollback ?
+      - Un état persistant ?
+    + It works on my machine:
+      - Quoi ? C'est pas ISO prod ??
+    + It *doesn't* work *only* on my machine:
+      - Quoi ? C'est vraiment pas ISO prod ??
   ]
 ]
 
 == From the ENIAC
  
-#only("1")[
-  #figure(image("assets/eniac.jpg", width: 70%))
-]
-#only("2")[
-  #figure(image("assets/eniac_panel.jpg", width: 70%))
+#slide[
+  #only("1")[
+    #figure(image("assets/eniac.jpg", width: 70%))
+  ]
+  #only("2")[
+    #figure(image("assets/eniac_panel.jpg", width: 70%))
+  ]
+
+  #speaker-note[
+    Electronic Numerical Integrator And Computer - 1er ordi Turing complete
+
+    *C'est quoi l'infra ?*
+
+    Infrastructure :
+    - _structure_ -> *relation* entre les *éléments* d'un système
+    - _infra_ -> « _*sous*_ », ce qui supporte
+    _infrastructure_ -> tout ce qui *supporte* un *système* (ex: -> fondations d'un bâtiment)
+
+    Ici : infrastructure = bâtiment, l'ENIAC littéralement une pièce
+
+    *NEXT*
+
+    *Ma prod est en panne ?*
+
+    On se déplace *physiquement*, on vérifie les *branchements*, on *documente* les *nouveaux branchements*, on *vérifie* les *entrées-sorties* (périphériques) sur *cartes perforées*, on vérifie la *configuration*…
+  ]
 ]
 
-== Dedicated Datacenter / Colocation
+== Rack Colocation
 
 #slide(align: center)[
-  #only("1")[
-    #figure(image("assets/datacenter_rack.jpg", width: 70%))
+  #figure(image("assets/datacenter_rack.jpg", width: 70%))
+
+  #speaker-note[
+    *On premise*: on est responsable de notre serveur, de notre baie, de notre emplacement rack
+
+    En collocation, on n'est plus responsable du bâtiment on loue un emplacement rack,
+
+    Selon la panne, l'accès en terminal suffit ; si c'est matériel on a toujours besoin d'un accès physique pour vérifier.
   ]
 ]
 
@@ -165,11 +251,33 @@
     node((1, 0.66), [Server C], radius: 3.4em, name: <SRVC>),
     edge((0, 0), "<|-|>"),
     edge((1, 0.66), "ll", (-1, 0), [✅], "<--", label-pos: 0.392),
-
-    only("4", node((-0.11, -0.91), [_Cluster_], fill: none, name: <Cluster>)),
-    only("4", node(enclose: (<Cluster>, <SRVA>, <SRVB>, <SRVC>), stroke: (paint: black, thickness: 1pt, dash: "loosely-dashed"), fill: black.transparentize(95%), snap: false)),
     pause,
+
+    node((-0.11, -0.91), [_Cluster_], fill: none, name: <Cluster>),
+    node(enclose: (<Cluster>, <SRVA>, <SRVB>, <SRVC>), stroke: (paint: black, thickness: 1pt, dash: "loosely-dashed"), fill: black.transparentize(95%), snap: false),
   )
+
+  #speaker-note[
+    *Cas d'usage* :
+
+    On veut une marketplace : on la déploie sur serveur dédié
+
+    *NEXT*
+
+    Elle tombe en panne : il faut prendre ses petites jambes, aller regarder ce qu'il se passe : en attendant le service est indispo.
+
+    Solution ?
+
+    *NEXT*
+
+    On l'*installe* sur *plusieurs serveurs*
+
+    Ça tombe en panne : on enquête, mais en attendant l'utilisateur peut toujours accéder à un autre serveur
+
+    *NEXT*
+
+    Notre marketplace tourne sur un Cluster de serveurs
+  ]
 ])
 
 == From physical servers to virtual machines
@@ -180,6 +288,22 @@
   _Help me!_
   
   _I've had enough of installing the same servers again and again…_
+
+  #place(bottom+right, [
+    #set text(size: 22pt)
+    _— Alexander_
+  ])
+
+  #speaker-note[
+    Et il a raison !
+
+    C'est pratique le cluster, mais pour éviter les pannes et pas mettre tous les œufs dans le même panier il faut déployer dans  de régions en même temps (coupure courant, internet…)
+
+    On prend soin de nos gambettes, on veut pas courir partout pour installer ni pour réparer
+
+    On loue l'infra, on s'occupe du logiciel :
+    *Infra-as-a-service* (le hardware est fournit, tu gères l'OS)
+  ]
 ]
 
 #slide(align: center, self => [
@@ -291,6 +415,27 @@
     only("6-", edge(<SRVD_A>, <SRVC_A>, "<|-|>", bend: 30deg)),
     only("6-", edge(<SRVB_A>, <SRVC_A>, "<|-|>", bend: 30deg)),
   )
+
+  #speaker-note[
+    La même chose, sauf que les serveurs ne sont pas _dédiés_ à ma marketplace, à la place ils hébergent plusieurs *machines virtuelles*
+    
+    Parmi ces VM -> ma marketplace
+
+    Utilisateur accède directement ma marketplace via la VM -> même chose qu'avant *SAUF QUE*
+
+    Si VM 1 en panne, pas besoin d'accéder au datacenter, on peut la recréer, la réinitialiser ou la redéployer ailleurs sans avoir besoin d'aller sur place
+
+    On appelle aussi ça un *VPS*
+
+    ------
+
+    Pourquoi je parle pas de SSH sur srv physique ? Parce qu'on parle d'infra (db, charges de travail,config réseau), pas JUSTE du système
+
+    -- Oui mais et moi mon serveur dédié jamais eu besoin d'aller sur place -> le hardware a jamais lâché et eu besoin ticket ?
+    -- Oui mais ça arrive jamais -> Si ça lâche une fois en 10 ans, il suffit d'avoir 10 serveurs pour qu'il y en ait 1 qui lâche par an, 100 serveurs et quasiment une panne tous les mois
+
+    On peut citer VMware, VirtualBox, Xen, Proxmox…
+  ]
 ])
 
 #slide(align: center)[
@@ -355,6 +500,17 @@
     edge(<SRVB_A>, <SRVC_A>, "<|-|>", bend: 30deg, layer: 1),
   )
 
+  #speaker-note[
+    Et si serveur physique en carafe ?
+
+    Eh bien pas de downtime puisqu'on a toujours le quorum
+
+    Sur la gestion de projet, concrètement ça veut dire qu'on gère des machines entières, qu'il faut maintenir, sécuriser, tester… et ça tourne pas sur un laptop de dev
+
+    Ça veut dire déployer un OS entier…
+
+    *MAIS* on peut trouver encore mieux
+  ]
 ]
 
 
@@ -412,6 +568,20 @@
     edge(<SRVD_A>, <SRVC_A>, "<|-|>", bend: 30deg),
     edge(<SRVB_A>, <SRVC_A>, "<|-|>", bend: 30deg),
   )
+
+  #speaker-note[
+    On reprend nos VM
+
+    Il y a une notion de sobriété : au début on a du matériel dédié pour faire tourner mes serveurs de marketplace, alors je fais tourner mes serveurs _virtuels_ sur des machines physiques
+
+    Mais ça veut dire faire tourner des systèmes d'exploitation plusieurs fois, devoir se balader avec un disque dur virtuel de centaines de GiO à upload pour déployer, etc.
+    
+    Comme si, pour aller au boulot tous les jours, on prenait toutes & tous notre bagnole, qu'on s'est dit que c'était pas pratique quand sa voiture tombe en panne alors on a un abonnement à une flotte de voitures en libre service : si elle tombe en panne, c'est le prestataire qui la répare, je me concentre uniquement sur ce qu'elle transporte.
+
+    Sauf qu'il y aurait encore plus économique en mutualisant encore plus de ressources : au lieu de payer des voitures en libre-service, je peux me contenter de payer un abonnement de bus et de faire mes déplacements en bus.
+
+    Au lieu d'héberger des applications dans des systèmes d'exploitation ou dans des machines virtuelles, on peut mettre nos applications dans des conteneurs plus légers et plus faciles à transporter
+  ]
 ]
 
 #slide(align: center)[
@@ -466,6 +636,18 @@
     edge(<SRVD_A>, <SRVC_A>, "<|-|>", bend: 30deg),
     edge(<SRVB_A>, <SRVC_A>, "<|-|>", bend: 30deg),
   )
+
+  #speaker-note[
+    Container-as-a-service : on fournit le hardware et l'OS, tu gères le conteneur
+
+    Du point de vue de l'appli, qu'elle soit sur un serveur dédié, sur une machine virtuelle, dans un conteneur… Rien ne change.
+
+    Les 3 seules différences :
+
+    - les ressources allouées et les ressources consommées
+    - le niveau d'isolation (sécu)
+    - le cycle de vie (quand ça démarre, ça met à jour…) et qui s'occupe de quoi
+  ]
 ]
 
 #slide[
@@ -480,6 +662,12 @@
   - It is easier to use (_It runs on my machine!_ #super[TM])
 
   - It _can_ be declarative
+
+  #speaker-note[
+    À partir 2012 avec le nouveau standard O.C.I apporté par Docker, on a commencé à voir deux paradigmes arriver avec les conteneurs : le Hub Docker (un dépôt avec plein d'images de conteneurs desquelles on peut dériver) et la syntaxe Dockerfile (un fichier qui décrit l'état désiré de l'image finale).
+    
+    J'y reviens après au sujet du déclaratif
+  ]
 ]
 
 == _Serverless_
@@ -539,10 +727,25 @@
     stack(4, 1),
   )
 
-])
+  #speaker-note[
+    C'est simplifié (dépend des produits) mais le type définit quel est le niveau qu'on commence à administrer : « on-prem, j'administre le réseau », « SaaS, j'*administre* l'appli mais c'est eux qui sont admins des données dessus » etc.
 
-#slide[
-]
+    - On Prem : j'achète et conduis ma voiture
+    - IaaS - infra : je loue et conduis une voiture
+    - CaaS - Container : j'ai un abonnement illimité de transport pour me déplacer
+    - PaaS - Platform : je commande un taxi uniquement quand j'en ai besoin, je paie à l'usage
+    - SaaS - Software : je délègue (je fais livrer)
+
+    Si ça pète on-premise, je me déplace, si l'OS pète j'investigue en console, si le conteneur pète je debug le code, si la plateforme pète je vérivie la config de l'app, si le SaaS pète j'appelle le support
+
+    En vrai :
+    - il y a quand même un serveur, « serverless » est un terme marketing
+    - le serveur est faillible, il y a des pannes, c'est juste un tiers qui s'en occupe
+    - c'est quand même coûteux de déléguer
+    - il y a des contraintes d'archi & avec le serverless ou SaaS on n'est pas toujours libre des cycles de release
+    - le serveur est toujours déployé avant, il est juste pas dédié qu'à notre marketplace
+  ]
+])
 
 = Infrastructure
 
@@ -553,6 +756,11 @@
   As a sysadmin,
 
   _What do I want with my system?_
+
+  #place(bottom+right, [
+    #set text(size: 22pt)
+    _— Alexander_
+  ])
   #place(top+right, [#v(6.7em)#figure(image("assets/bongowhat.gif", width: 13%))])
 ]
 #slide[
@@ -564,6 +772,10 @@
     - I update dependencies #pause
     - hardware breaks #pause
     - I replace disks, upgrade RAM 💸, change CPU…
+
+    #speaker-note[
+
+    ]
 ]
 #slide[
   In programming, the *imperative paradigm* is writing a sequence of instructions: *it's a cookbook*
@@ -582,7 +794,11 @@
   No… As a sysadmin,
 
   _What do I *really* want with my system?_
-  #place(top+right, [#v(6.7em)#figure(image("assets/calicobongocat.gif", width: 16%))])
+  #place(bottom+right, [
+    #set text(size: 22pt)
+    _— Alexander, again_
+  ])
+  #place(top+right, [#v(6.6em)#figure(image("assets/calicobongocat.gif", width: 17%))])
 ]
 #slide[
 
@@ -616,25 +832,53 @@ It means to describe a *final state* rather than the steps to reach it.
 
   _It's up to them to buy the ingredients and to know and execute the recipe._
   #v(24pt)
-  #place(bottom+right, figure(image("assets/montdor.png", width: 14%)))
+  #place(top+left, [#v(7em)#figure(image("assets/montdor.png", width: 14%))])
+
+  #place(bottom+right, [
+    #set text(size: 22pt)
+    #only("1")[
+      _— Alexander, sysadmin_ 
+    ]
+    #only("2")[
+      _— Luka_
+
+      #set text(size: 18pt)
+      _(Cheese dealer)_
+    ]
+  ])
+
+  #speaker-note[
+    Ça, c'est Alex qui l'a dit
+
+    *NEXT*
+
+    Non, en fait c'est moi :D
+  ]
 ]
 
 #slide[
+  #pause
   #place(top+right, text(size: 70pt)[#v(35pt)📜])
-Many common languages are *declarative*: HTML, Markdown, SQL…
+  Many common languages are *declarative*: HTML, Markdown, SQL…
 
-#hline
+  #hline
 
-#set par(first-line-indent: 0em, hanging-indent: 0em)
-Yet, not all declarative languages can compute data: an HTML page cannot perform division calculations.
+  #set par(first-line-indent: 0em, hanging-indent: 0em)
+  Yet, not all declarative languages can compute data: an HTML page cannot perform division calculations.
+
+  #speaker-note[
+    On parle d'infra, on parle de déclaratif, mais en fait on connais toutes et tous des langages déclaratifs
+
+    Pour autant, tous les langages déclaratifs ne sont pas des langages de programmation.
+  ]
 ]
 
 #slide[
-Declarative and *Turing-complete* languages are numerous and more specialized:
+  Declarative and *Turing-complete* languages are numerous and more specialized:
 
-#h(0.3em)
+  #h(0.3em)
 
-#pause
+  #pause
 
 - *Haskell* or *OCaml* for functional programming
 
@@ -644,7 +888,9 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 
 #pause
 
-- *Typst* as a markup language (with love ❤️ )
+- *Terraform* (_HCL_) for infrastructure management
+
+- *Typst* as a programming markup language ❤️ (LaTeΧ)
 ]
 
 == Declarative Dependency Managers
@@ -664,6 +910,12 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   ```bash
   docker run -p 8080:8080 my_image
   ```
+
+  #speaker-note[
+    - On déclare : je veux construire un conteneur à partir de tel format (Dockerfile)
+    - Je donne l'ordre : je veux que mon conteneur tourne
+    - Docker dit : je réalise toutes ces étapes
+  ]
 ]
 
 #focus-slide(align: top, config: config-page(fill: white, margin: 0em))[
@@ -680,17 +932,31 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   ```bash
   docker build -t my_image .
   ```
+  #pause
+  ```bash
+  docker build -t my_image .
+  ```
+  #pause
+  ```bash
+  docker build -t my_image .
+  ```
   #set text(weight: 500)
   ```bash
   docker run -p 8080:8080 my_image
   ```
 
-  #pause
   #h(0em)
 
-  The *`docker build`* command has no effect if called again twice; it is *idempotent*.
+  The *`docker build`* command has no extra effect if called again; it is *idempotent*.
 
   An action is *idempotent* when it has the same effect, whether called once or repeated.
+
+  #speaker-note[
+    - Si on relance plusieurs fois `docker build`, ça existe déjà et ça fait rien de plus : on parle d'IDEMPOTENCE (ex: cliquer sur un bouton pour valider le panier)
+
+    Il faut comprendre que derrière toute étape déclarative se cachent des opérations impératives. C'est une question de responsabilités.
+
+  ]
 ]
 
 #slide[
@@ -723,6 +989,15 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   ```bash
   node ./node_modules/menari
   ```
+
+  #speaker-note[
+    Exemple avec NPM:
+      - `npm install [pkg]` -> impératif
+      - le `package.json` déclare la dépendance
+      - `npm install` installe à partir de la déclaration
+
+      OUI MAIS et les màjs automatiques ?
+  ]
 ]
 
 == Declarative and Reproducible
@@ -738,6 +1013,11 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   _I know I can get more,_
 
   _so give me more._
+
+  #place(bottom+right, [
+    #set text(size: 22pt)
+    _— Alexander… again_ 
+  ])
 
   #place(top+right, [#v(-0.1em)#figure(image("assets/bongorage.gif", width: 16%))#h(7em)])
 ]
@@ -760,15 +1040,13 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 
   === The same code has _*exactly*_ the same results.
 
-  #speaker-note[
-    Une page web faisant référence à des *ressources externes* n'est pas reproductible, car elle n'est pas strictement identique si ces ressources externes changent.
-
-    *Sans ressources externes*, une page HTML est strictement *identique* et *reproductible* :
-  ]
+  #speaker-note[Les mêmes causes produisent les mêmes effets]
 ]
 #focus-slide(align: center)[
   #set text(font: "libertinus serif", size: 48pt)
   Same causes, same effects.
+
+  #speaker-note[Les mêmes causes produisent les mêmes effets]
 ]
 
 #slide[
@@ -809,13 +1087,17 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   There are other declarative tools for deploying and orchestrating containers:
   #pause
 
-  - `docker compose` is the declarative alternative to `docker run`  
+  - *`docker compose`* is the declarative alternative to `docker run`  
   #pause  
-  - `docker swarm` for orchestrating containers across clusters  
-  #pause  
-  - Kubernetes enables management of containers and monitoring of cloud resources (storage requests, public IP addresses, etc.)  
+  - *`kubernetes`* for orchestrating containers across clusters
   #pause  
   - etc.
+
+  #speaker-note[
+    Docker compose…
+
+    Kubernetes permet d'orchestrer des conteneurs (et d'autres ressources) sur un cluster
+  ]
 ]
 
 == Infrastructure Deployment
@@ -858,6 +1140,10 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
     node((rel: (4 * cell_width, 0pt), to: (0, 0)), text(weight: 900)[SaaS], name: <SaaS>, fill: none, stroke: none),
     stack(4, 1),
   )
+
+  #speaker-note[
+    pour revenir à notre infra
+  ]
 ]
 
 // N'est PAS reproductible _stricto sensus_
@@ -905,7 +1191,7 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 
   #h(0em)
 
-  _I'm a developper,_
+  _I'm a developer,_
 
   _How does that even affect me?_
   #place(top+right, [#v(2.65em)#block(
@@ -913,6 +1199,15 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
     radius: 14pt,
     figure(image("assets/hackerbongocat.gif", width: 14%))
   )])
+
+  #place(bottom+right, [
+    #set text(size: 22pt)
+    _— Roger_
+  ])
+
+  #speaker-note[
+    Monsieur Roger, dev, pas hyper intéressé par l'ops, peut quand même profiter du déclaratif
+  ]
 ]
 
 = Toolchains
@@ -930,17 +1225,63 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 == Declarative Toolchain
 
 #slide(align: top)[
+  #only("6-")[
+    #place(top+right, figure(image("assets/nixos.svg", width: 14%)))
+  ]
   #v(1.5em)
   === Per project
+
+  Multiple projects should be able to use independent software and versions without conflicting with each other:
+
+  #pause
+
+  - Building from source#pause
+  - Using language-specific package managers (`npm`, `pip`, …)#pause
+  - In fact, *_Mise_* a ‘front-end’ to install any package manager's package…#pause
+  - …and does support a `mise.toml` file to enable them _declaratively_#pause
+  - Docker through conteneurs
+  - `devenv`, `direnv` or plain `.envrc`#pause
+  - `nix`, a declarative _and reproductible_ package manager
+
+  #speaker-note[
+    Je voulais parler d'outillage propre au développement : par projet, ça permet de garder un système propre et d'avoir des logiciels, versions de logiciels, … indépendants à chaque répertoire
+
+    - Compiler depuis les sources : le binaire est construit à partir de fichiers qui déclarent du code
+    - Les gestionnaires de packet propres aux langages (`./node_modules`)
+    - Mise, qui permet d'utiliser de faire ce qu'on vient de dire mais pour tous les package managers sans les installer
+    - Docker, en conteneurs
+    - devenv, direnv, .envrc, qui permettent de définir un contexte en entrant dans un répertoire
+    - Nix, qui est à la fois un langage de programmation (turing-complete), déclaratif, et fortement reproductible (toutes les entrées sont signées)
+
+    En fait, Nix est même le plus grand package manager au monde, parmi les dépôts Github les plus actifs, et avec les batteries de tests les plus solides. Nix permet aussi de charger des logiciels de n'importe quel système en entrant dans un répertoire
+  ]
 ]
 
 #slide(align: top)[
+  #only("4-")[
+    #place(top+right, figure(image("assets/nixos.svg", width: 14%)))
+  ]
   #v(1.5em)
   === Per user
+
+  Multiple non-admin *users* should be able to use independent software and versions without conflicting with each other:
+
+  #pause
+
+  - Global (user) npm installs#pause
+  - Global (user) Docker installs#pause
+  - …Nix again
 ]
 #slide(align: top)[
+  #place(top+right, figure(image("assets/nixos.svg", width: 14%)))
   #v(1.5em)
   === Per Operating System?
+
+  Have you heard about Nix already?#pause
+
+  NixOS is a fully-declarative and reproductible operating system.
+
+  *The whole system fits in a Git repository*, just reapply anytime to deploy it.
 ]
 
 #focus-slide(align: center)[
@@ -951,6 +1292,11 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 
   _Why should I care about all of this?_
   #place(top+right, [#v(3em)#figure(image("assets/bongopat.gif", width: 14%))])
+
+  #place(bottom+right, [
+    #set text(size: 22pt)
+    _— Nick O._ 
+  ])
 ]
 
 = Projects

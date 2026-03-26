@@ -1534,7 +1534,6 @@ It means to describe a *final state* rather than the steps to reach it.
     pause,
     node(enclose: (<biz>, <dc>), shape: brace.with(dir: right, length: 100% + 2em, size: 1.5em, sep: -0.4em)),
     edge(<dev>, <biz>, "-", rotate(-90deg)[#align(center)[#highlight[End-to-end tests\ Feature environments]]], label-pos: -18.9em, label-sep: -1.6em, stroke: black.transparentize(100%), ),
-    pause,
   )
 
   #pause
@@ -1546,6 +1545,31 @@ It means to describe a *final state* rather than the steps to reach it.
   ]
 
   #speaker-note[
+    On reprend ce qu'on avait avant (métier qui parle aux leads qui discute avec les devs)
+
+    NEXT
+
+    Et de l'autre côté, on a les ops qui _préparent_ l'infra
+
+    NEXT
+
+    Pour que les devs puissent déployer des ressources eux-même
+
+    NEXT
+
+    Qu'ils pourront tester
+
+    NEXT
+
+    Ça permettra aux devs et aux leads de faire des revues d'infra sur des PR par exemple
+
+    NEXT
+
+    Et à la fin n'importe qui peut exécuter des tests end-to-end, y compris sur des feature branches
+
+    NEXT
+
+    Le fait de rapprocher l'infra du dev, le dev de l'infra, c'est ce qu'on peut appeler du… DEVOPS
 
     ---
 

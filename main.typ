@@ -42,7 +42,6 @@
   footer-right: none,
   config-common(
     frozen-counters: (theorem-counter,),
-    show-notes-on-second-screen: right,
   ),
   config-info(
     title: [♻️ Reliable infrastructure deployments],
@@ -1282,7 +1281,7 @@ It means to describe a *final state* rather than the steps to reach it.
 
   *The whole system fits in a Git repository*, just reapply anytime to deploy it.
 
-  An example of a 5 years server(s) and desktops in the same repository: #link("https://gitlab.com/bluka/nix")[*`gitlab.com/bluka/nix`*]
+  An example of a 5 years servers, shells and desktops in the same repository: #link("https://gitlab.com/bluka/nix")[*`gitlab.com/bluka/nix`*]
 ]
 
 #focus-slide(align: center)[

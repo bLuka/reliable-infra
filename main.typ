@@ -1308,8 +1308,10 @@ It means to describe a *final state* rather than the steps to reach it.
   ]
   #v(1.5em)
   === Per project
+  #v(1em)
 
-  Multiple projects should be able to use independent software and versions without conflicting with each other:
+  Multiple projects should be able to use independent software and\ versions without conflicting with each other:
+  #v(1em)
 
   #pause
 
@@ -1339,10 +1341,12 @@ It means to describe a *final state* rather than the steps to reach it.
   #only("4-")[
     #place(top+right, figure(image("assets/nixos.svg", width: 14%)))
   ]
-  #v(2.5em)
+  #v(1.5em)
   === Per user
+  #v(1em)
 
-  Multiple non-admin *users* should be able to use independent software and versions without conflicting with each other:
+  Multiple non-admin *users* should be able to use independent software\ and versions without conflicting with each other:
+  #v(1em)
 
   #pause
 
@@ -1354,8 +1358,10 @@ It means to describe a *final state* rather than the steps to reach it.
   #place(top+right, figure(image("assets/nixos.svg", width: 14%)))
   #v(1.5em)
   === Per Operating System?
+  #v(1em)
 
   Have you heard about Nix already?#pause
+  #v(1em)
 
   NixOS is a fully-declarative and reproducible operating system.
 

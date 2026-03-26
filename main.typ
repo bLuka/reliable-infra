@@ -1146,7 +1146,6 @@ It means to describe a *final state* rather than the steps to reach it.
   ]
 ]
 
-// N'est PAS reproductible _stricto sensus_
 #slide[
   *Terraform* allows you to declare and deploy infrastructure from code using the _ad hoc_ *HCL* language:
 
@@ -1241,7 +1240,7 @@ It means to describe a *final state* rather than the steps to reach it.
   - …and does support a `mise.toml` file to enable them _declaratively_#pause
   - Docker through conteneurs
   - `devenv`, `direnv` or plain `.envrc`#pause
-  - `nix`, a declarative _and reproductible_ package manager
+  - `nix`, a declarative _and reproducible_ package manager
 
   #speaker-note[
     Je voulais parler d'outillage propre au développement : par projet, ça permet de garder un système propre et d'avoir des logiciels, versions de logiciels, … indépendants à chaque répertoire
@@ -1279,9 +1278,11 @@ It means to describe a *final state* rather than the steps to reach it.
 
   Have you heard about Nix already?#pause
 
-  NixOS is a fully-declarative and reproductible operating system.
+  NixOS is a fully-declarative and reproducible operating system.
 
   *The whole system fits in a Git repository*, just reapply anytime to deploy it.
+
+  An example of a 5 years server(s) and desktops in the same repository: #link("https://gitlab.com/bluka/nix")[*`gitlab.com/bluka/nix`*]
 ]
 
 #focus-slide(align: center)[
@@ -1457,14 +1458,13 @@ It means to describe a *final state* rather than the steps to reach it.
     _✨ DevOps ✨_
     #v(0.6em)
   ]
-]
 
-== Risk Management
+  #speaker-note[
 
-#slide[
-  === Business Continuity & Business Recovery Plans…
+    ---
 
-  === Infrastructure Deployments Management…
+    On pourrait aussi parler de gestion de risque, de plan de continuité et de reprise d'activité, de gestion de cycles de déploiement mais ça ferait l'objet d'une autre présentation.
+  ]
 ]
 
 == Software reliability
@@ -1472,6 +1472,12 @@ It means to describe a *final state* rather than the steps to reach it.
 #slide[
   === DORA Metrics:
   #box(figure(image("assets/dora.png", width: 100%)), clip: true)
+
+  #speaker-note[
+    C'est Robin qui en parle très bien et ça pourrait faire l'objet d'une présentation à part.
+
+    Ce sont les mesures de performance d'un projet et de l'intérêt d'un bon cycle de vie de release. On y travaille activement avec l'équipe PIC.
+  ]
 ]
 
 #focus-slide(align: top, config: config-page(fill: white, margin: 0em))[

@@ -39,7 +39,7 @@
 #show: show-theorion
 #show: metropolis-theme.with(
   aspect-ratio: "16-9",
-  footer-right: none,
+  footer-right: [`bluka.github.io/reliable-infra`],
   config-common(
     frozen-counters: (theorem-counter,),
   ),
@@ -65,6 +65,11 @@
     light-color: white.transparentize(100%),
   )
   #v(-3em)
+  #speaker-note[
+    J'aimerais vous parler d'infra, de paradigmes de déploiement et de gestion logicielle
+    
+    (Vous trouverez la présentation sur ce lien ; sur mobile c'est pas parfait mais il faut juste swipe pour changer de slide)
+  ]
 ])
 
 = Outline <touying:hidden>
@@ -504,6 +509,12 @@
 
     Eh bien pas de downtime puisqu'on a toujours le quorum
 
+    NEXT
+
+    Ça déploie un nouveau serveur
+
+    ---
+
     Sur la gestion de projet, concrètement ça veut dire qu'on gère des machines entières, qu'il faut maintenir, sécuriser, tester… et ça tourne pas sur un laptop de dev
 
     Ça veut dire déployer un OS entier…
@@ -765,7 +776,6 @@
 #slide[
 
 #set list(marker: ([•], [--]))
-#pause
   - Easy to setup #pause
   - Available and reliable#pause, even when…
     - I update dependencies #pause
@@ -773,7 +783,7 @@
     - I replace disks, upgrade RAM 💸, change CPU…
 
     #speaker-note[
-
+      Available & reliable: haute disponibilité dans un cluster
     ]
 ]
 #slide[
@@ -784,6 +794,16 @@
   #v(1em)
 
   To deploy an on-premise infrastructure, there is a whole series of processes to follow in order to acquire, install, start or maintain servers.
+
+  #speaker-note[
+Un paradigme est — en épistémologie et dans les sciences humaines et sociales — une représentation du monde, une manière de voir les choses, un modèle cohérent du monde qui repose sur un fondement défini (matrice disciplinaire, modèle théorique, courant de pensée). 
+
+    Rappel que la problématique : ma prod est en panne, je sais pas si c'est infra ou software, je sais pas quoi faire, je veux être autonome
+
+    En impératif, il faut vérifier couche par couche si tout fonctionne bien du software au hardware, sans avoir toutes les permissions à tous les niveaux (sinon on est sysadmin)
+
+    On _PEUT_ avoir connaissance des processus et de la recette de cuisine, mais difficilement du résultat exact et de la manière dont les étapes ont été suivies.
+  ]
 ]
 
 == Declarative
@@ -889,6 +909,8 @@ It means to describe a *final state* rather than the steps to reach it.
 
 - *Terraform* (_HCL_) for infrastructure management
 
+#pause
+
 - *Typst* as a programming markup language ❤️ (LaTeΧ)
 ]
 
@@ -911,7 +933,7 @@ It means to describe a *final state* rather than the steps to reach it.
   ```
 
   #speaker-note[
-    - On déclare : je veux construire un conteneur à partir de tel format (Dockerfile)
+    - On déclare : je veux construire un conteneur à partir de tel déclaration (Dockerfile)
     - Je donne l'ordre : je veux que mon conteneur tourne
     - Docker dit : je réalise toutes ces étapes
   ]
@@ -1039,7 +1061,11 @@ It means to describe a *final state* rather than the steps to reach it.
 
   === The same code has _*exactly*_ the same results.
 
-  #speaker-note[Les mêmes causes produisent les mêmes effets]
+  #speaker-note[
+    On parle de reproductibilité
+
+    Les mêmes causes produisent les mêmes effets
+  ]
 ]
 #focus-slide(align: center)[
   #set text(font: "libertinus serif", size: 48pt)
@@ -1080,6 +1106,18 @@ It means to describe a *final state* rather than the steps to reach it.
     #set text(weight: 400)
     This _lockfile_ scheme is everywhere: `yarn` or `pnpm` in *JavaScript*, `pip` with *Python*, `cargo` in *Rust*, `composer` in *PHP*, etc.
   ]
+
+  #speaker-note[
+    `npm install` n'est PAS strictement reproductible : il va chercher les updates mineures et _peut_ modifier le lockfile
+
+    pour des install strictement reproductibles à partir du `package.json` & lock : `npm ci`
+
+    on parle aussi de « Déterminisme »
+
+    ---
+
+    Et pour revenir aux conteneurs :
+  ]
 ]
 
 #slide(title: "Other container managers")[
@@ -1093,6 +1131,10 @@ It means to describe a *final state* rather than the steps to reach it.
   - etc.
 
   #speaker-note[
+    Et pour revenir aux conteneurs :
+
+    Est-ce qu'on a des outils déclaratifs au lieu de Docker run ?
+
     Docker compose…
 
     Kubernetes permet d'orchestrer des conteneurs (et d'autres ressources) sur un cluster
@@ -1166,7 +1208,7 @@ It means to describe a *final state* rather than the steps to reach it.
 
     Then run: `terraform apply`
   ]
-  #only("3")[
+  #only("3-")[
     ```hcl
 
     // empty
@@ -1178,6 +1220,27 @@ It means to describe a *final state* rather than the steps to reach it.
     #h(1em)
 
     Then run: `terraform apply`
+
+
+  ]
+  #only("4-")[
+    #link("https://alexeyondata.substack.com/p/how-i-dropped-our-production-database")[alexeyondata.substack.com/p/how-i-dropped-our-production-database]
+  ]
+
+  #speaker-note[
+    - Ça se crée à l'apply, c'est destroyed quand c'est supprimé
+    - Terraform traduit en appels API
+    - Une référence dans la gestion d'infra
+
+    ---
+
+    Il faut faire attention :
+
+    - Ressortir la blague de Terraform exécuté par Claude qui wipe le Cloud, les DB, les backups de DB
+
+    Analogie :
+
+    Le chef cuistot Terraform interprète la déclaration et fait sa tambouille lui-même avant de servir le plat
   ]
 ]
 
@@ -1205,6 +1268,18 @@ It means to describe a *final state* rather than the steps to reach it.
 
   #speaker-note[
     Monsieur Roger, dev, pas hyper intéressé par l'ops, peut quand même profiter du déclaratif
+
+    Infra as code c'est du code :
+
+    Une feature qui nécessite une nouvelle DB peut avoir les deux changements (infra/code) dans une même PR
+
+    Plus besoin de faire de ticket infra : les changements peuvent être faits par les devs autonomes, ça va plus vite
+
+    C'est possible de tester les changements infra de manière autonome avant même que ça parte en prod, en quelques lignes
+
+    MAIS
+
+    Y'a pas moyen que ça serve pour autre chose que l'infra ?
   ]
 ]
 
@@ -1218,6 +1293,11 @@ It means to describe a *final state* rather than the steps to reach it.
   #v(1em)
 
   Some of them might suit a narrower audience.
+
+  #speaker-note[
+    Je voulais parler d'outillage propre au développement
+  ]
+
 ]
 
 == Declarative Toolchain
@@ -1237,7 +1317,7 @@ It means to describe a *final state* rather than the steps to reach it.
   - Using language-specific package managers (`npm`, `pip`, …)#pause
   - In fact, *_Mise_* a ‘front-end’ to install any package manager's package…#pause
   - …and does support a `mise.toml` file to enable them _declaratively_#pause
-  - Docker through conteneurs
+  - Docker through conteneurs#pause
   - `devenv`, `direnv` or plain `.envrc`#pause
   - `nix`, a declarative _and reproducible_ package manager
 
@@ -1259,15 +1339,15 @@ It means to describe a *final state* rather than the steps to reach it.
   #only("4-")[
     #place(top+right, figure(image("assets/nixos.svg", width: 14%)))
   ]
-  #v(1.5em)
+  #v(2.5em)
   === Per user
 
   Multiple non-admin *users* should be able to use independent software and versions without conflicting with each other:
 
   #pause
 
-  - Global (user) npm installs#pause
-  - Global (user) Docker installs#pause
+  - Global (user) `npm install`'s#pause
+  - Global (user) Docker pull/builds/runs#pause
   - …Nix again
 ]
 #slide(align: top)[

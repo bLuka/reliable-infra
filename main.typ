@@ -43,36 +43,36 @@
   config-common(frozen-counters: (theorem-counter,)),
   config-info(
     title: [♻️ Reliable infrastructure deployments],
-    subtitle: [From imperative to declarative & reproducible — A project's lifecycle],
+    subtitle: [From imperative to declarative & reproducible — A project lifecycle],
     author: [Luka BOULAGNON _(Platform, Infrastructure & Cloud)_],
     institution: [#strong[ReTech 2026]],
-    logo: [#nf-icon("nf-fa-code")`  `],
+    logo: [#image("assets/computer.png", height: 1.4em)],
   ),
 )
 
 #title-slide(extra: block(width: 100%)[
-  #set text(size: 18pt, weight: 700)
+  #set text(size: 16pt)
   #set align(right)
-  #set par(spacing: 0em, leading: 0em)
-  Also find the presentation on: #h(14pt)
-  #v(21pt)
+  #set par(spacing: 1em, leading: 0em)
+  #v(1em)
+  _Also find the presentation on #link("https://bluka.github.io/reliable-infra")[*`bluka.github.io/reliable-infra`*]_ #h(14pt)
+  #v(-1em)
   #qr-code(
     "github.com/bLuka/reliable-infra",
     height: 44%,
     light-color: white.transparentize(100%),
   )
-
-  `bluka.github.io/reliable-infra` #h(14pt)
+  #v(-3em)
 ])
 
-== Different deployments paradigms <touying:hidden>
+= Outline <touying:hidden>
 
 #show outline.entry: it => {
   return box(width: 100%, height: 40pt)[#text(size: 29pt, weight: 600)[#nf-icon("nf-oct-triangle_right")` ` #it.body()]]
 }
 #components.adaptive-columns(outline(title: none, indent: 2em, depth: 1))
 
-= History & challenges
+= History
 
 == History
 
@@ -488,7 +488,7 @@
   #place(top + right, dy: -10pt, dx: 10pt, figure(image("assets/bongocat_mouse.gif", width: 10%)))
   #v(65pt)
 
-  We can rent a database (_DBaaS_) or a sandbox to run code (_FaaS_) without managing the OS or hardware: we move to *serverless*.
+  We can rent a database (_DBaaS_) or a sandbox to run code (_FaaS_) without managing the OS or hardware: we move to *serverless*
 
   #v(10pt)
 
@@ -544,7 +544,7 @@
 #slide[
 ]
 
-= State of the art
+= Infrastructure
 
 == Imperative
 
@@ -553,23 +553,26 @@
   As a sysadmin,
 
   _What do I want with my system?_
+  #place(top+right, [#v(6.7em)#figure(image("assets/bongowhat.gif", width: 13%))])
 ]
 #slide[
 
 #set list(marker: ([•], [--]))
 #pause
-  - Easy to configure #pause
+  - Easy to setup #pause
   - Available and reliable#pause, even when…
     - I update dependencies #pause
     - hardware breaks #pause
     - I replace disks, upgrade RAM 💸, change CPU…
 ]
 #slide[
-  In programming, the *imperative paradigm* consists of writing a program as a sequence of instructions: *it's a cookbook*.
+  In programming, the *imperative paradigm* is writing a sequence of instructions: *it's a cookbook*
 
   #pause
 
-  To deploy an on-premise infrastructure, there is a whole series of processes to follow in order to acquire, install, start, or maintain servers.
+  #v(1em)
+
+  To deploy an on-premise infrastructure, there is a whole series of processes to follow in order to acquire, install, start or maintain servers.
 ]
 
 == Declarative
@@ -579,23 +582,28 @@
   No… As a sysadmin,
 
   _What do I *really* want with my system?_
+  #place(top+right, [#v(6.7em)#figure(image("assets/calicobongocat.gif", width: 16%))])
 ]
 #slide[
 
   #set list(marker: ([•], [--]))
   #set text(fill: black.transparentize(70%))
-  - Easy to configure
+  - Easy to setup
   - Available and reliable #pause
   #set text(fill: black)
   - Document properly:
     - _What_ is on it?
-    - _Why_ in that way?
-    - _How_ it's done #pause
-  - Easily _change_ and maintain #pause
-  - Easy to review #pause
+    - _How_ it's done
+    - _Why_ in that way? #pause
+  - Easily _changed_ and maintained #pause
+  - Easily reviewed
 ]
 #slide[
-*Declarative programming* contrasts with the imperative paradigm and consists of describing a *final state* rather than the steps to reach it.
+*Declarative programming* contrasts with the imperative paradigm.
+
+#v(1em)
+
+It means to describe a *final state* rather than the steps to reach it.
 ]
 
 #focus-slide(align: center)[
@@ -607,9 +615,12 @@
   *_You don't give them the recipe,_*
 
   _It's up to them to buy the ingredients and to know and execute the recipe._
+  #v(24pt)
+  #place(bottom+right, figure(image("assets/montdor.png", width: 14%)))
 ]
 
 #slide[
+  #place(top+right, text(size: 70pt)[#v(35pt)📜])
 Many common languages are *declarative*: HTML, Markdown, SQL…
 
 #hline
@@ -645,6 +656,26 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   cd docker-rickroll/
   ```
   #pause
+  #set text(weight: 900)
+  ```bash
+  docker build -t my_image .
+  ```
+  #set text(weight: 500)
+  ```bash
+  docker run -p 8080:8080 my_image
+  ```
+]
+
+#focus-slide(align: top, config: config-page(fill: white, margin: 0em))[
+  #box(figure(image("assets/rickroll.gif", width: 100%)), clip: true, inset: (bottom: -59%))
+]
+
+#slide[
+  ```bash
+  cd $(mktemp -d)
+  git clone "https://github.com/modem7/docker-rickroll"
+  cd docker-rickroll/
+  ```
   #set text(weight: 900)
   ```bash
   docker build -t my_image .
@@ -698,19 +729,23 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 
 #focus-slide(align: center)[
   #set text(font: "libertinus serif", size: 48pt)
-  _No! You really don't get it!_
+  _No!_
+
+  _You really don't get it!_
 
   #h(0em)
 
-  _As a sysadmin,_
+  _I know I can get more,_
 
-  _What am I *dreaming* of with my system?_
+  _so give me more._
+
+  #place(top+right, [#v(-0.1em)#figure(image("assets/bongorage.gif", width: 16%))#h(7em)])
 ]
 #slide[
 
   #set list(marker: ([•], [--]))
   #set text(fill: black.transparentize(70%))
-  - Easy to configure
+  - Easy to setup
   - Available and reliable
   - Document properly
   - Easy to _change_ and maintain
@@ -718,16 +753,18 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   #set text(fill: black)
   - Easy to reproduce #pause
   - Prevent undeclared changes #pause
-  - Allow changes from non-sysadmins #pause
+  - Allow changes from non-sysadmins
 ]
 #slide[
-  Sometimes, we want our declarative code to be strictly *reproducible*: the same code has exactly the same results.
+  Sometimes, we want our declarative code to be strictly *reproducible*:
 
-  #h(0em)
+  === The same code has _*exactly*_ the same results.
 
-  A web page referencing *external resources* is not reproducible, as it is not strictly identical if those external resources change.
+  #speaker-note[
+    Une page web faisant référence à des *ressources externes* n'est pas reproductible, car elle n'est pas strictement identique si ces ressources externes changent.
 
-  *Without external resources*, an HTML page is strictly *identical* and *reproducible*:
+    *Sans ressources externes*, une page HTML est strictement *identique* et *reproductible* :
+  ]
 ]
 #focus-slide(align: center)[
   #set text(font: "libertinus serif", size: 48pt)
@@ -768,7 +805,7 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   ]
 ]
 
-#slide(title: "Autres outils de gestion de conteneurs")[
+#slide(title: "Other container managers")[
   There are other declarative tools for deploying and orchestrating containers:
   #pause
 
@@ -860,53 +897,65 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   ]
 ]
 
-== Tools — Local Environment
+
 
 #focus-slide(align: center)[
   #set text(font: "libertinus serif", size: 48pt)
-  I'm done with this presentation.
+  _I'm done with this presentation._
 
   #h(0em)
 
-  I'm a developper,
+  _I'm a developper,_
 
-  How does that even affect me?
+  _How does that even affect me?_
+  #place(top+right, [#v(2.65em)#block(
+    clip: true,
+    radius: 14pt,
+    figure(image("assets/hackerbongocat.gif", width: 14%))
+  )])
+]
+
+= Toolchains
+
+== We all know declarative
+
+#slide[
+  We already know about mainstream declarative languages like *HTML* & *CSS*
+
+  #v(1em)
+
+  Some of them might suit a narrower audience.
+]
+
+== Declarative Toolchain
+
+#slide(align: top)[
+  #v(1.5em)
+  === Per project
 ]
 
 #slide(align: top)[
   #v(1.5em)
-  === My local tools…
-
-  ==== #h(2em) …Per project
-]
-
-#slide(align: top)[
-  #v(1.5em)
-  === My local tools…
-
-  ==== #h(2em) …Per user
-  Nix
+  === Per user
 ]
 #slide(align: top)[
   #v(1.5em)
-  === My local tools…
-
-  ==== #h(2em) …Per operating system
-  Nix
+  === Per Operating System?
 ]
 
 #focus-slide(align: center)[
   #set text(font: "libertinus serif", size: 48pt)
-  I'm not even a tech person…
+  _I'm not even a tech person…_
 
   #h(0em)
 
-  Why should I care about all of this?
+  _Why should I care about all of this?_
+  #place(top+right, [#v(3em)#figure(image("assets/bongopat.gif", width: 14%))])
 ]
 
-= In practice
+= Projects
 
-== Collaborative work — Infrastructure as Code
+== Project lifecycle
 
 #slide[
   #set align(center)
@@ -949,6 +998,9 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
 
 
     edge(<dc>, <biz>, "<..>", align(center)[6. Acceptance tests], bend: 40deg, label-pos: 77%, label-sep: -26pt, stroke: black.transparentize(50%)),
+
+    edge((-0.3, -1), (4.4, 1.5), stroke: (paint: white.transparentize(100%), thickness: 4pt)),
+    edge((-0.3, 1.5), (4.4, -1), stroke: (paint: white.transparentize(100%), thickness: 4pt)),
   )
 
   #set align(left)
@@ -1031,7 +1083,7 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
     node((1, 0), [Leads], radius: 2.8em, name: <lead>, fill: gradient.radial(blue.lighten(80%).transparentize(80%), blue.transparentize(80%), center: (30%, 20%), radius: 80%), stroke: black.transparentize(80%)),
     edge(<lead>, <dev>, "-|>", align(center)[Discuss\ architecture], bend: 53deg, stroke: black.transparentize(10%)),
 
-    node((2, 0), [Devs], radius: 2.8em, name: <dev>, fill: gradient.radial(blue.lighten(80%).transparentize(80%), blue.transparentize(80%), center: (30%, 20%), radius: 80%), stroke: black.transparentize(80%)),
+    node((2, 0), [Devs], radius: 2.8em, name: <dev>, fill: gradient.radial(blue.lighten(99.9%), blue.lighten(80%), center: (30%, 20%), radius: 80%), stroke: black.transparentize(80%)),
     pause,
 
     node((2.7, 1), [Ops], radius: 2.8em, name: <ops>, fill: gradient.radial(blue.lighten(80%).transparentize(80%), blue.transparentize(80%), center: (30%, 20%), radius: 80%), stroke: black.transparentize(80%)),
@@ -1041,6 +1093,7 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
     pause,
 
     edge(<dev>, <dc>, "-|>", align(center)[#highlight[Deploy resources]], bend: 45deg, stroke: black.transparentize(10%)),
+    pause,
     edge(<dc>, <dev>, "<..>", align(center)[#highlight[System tests]], bend: -12deg, stroke: black.transparentize(10%)),
     pause,
     edge(<lead>, <dc>, "<..>", align(center)[], bend: -34deg, stroke: black.transparentize(10%)),
@@ -1060,11 +1113,6 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   ]
 ]
 
-== Deployments lifecycles
-
-#slide[
-]
-
 == Risk Management
 
 #slide[
@@ -1073,15 +1121,16 @@ Declarative and *Turing-complete* languages are numerous and more specialized:
   === Infrastructure Deployments Management…
 ]
 
-== Key Performance Indicators, or KPI
+== Software reliability
 
 #slide[
-  === DORA Metrics
+  === DORA Metrics:
+  #box(figure(image("assets/dora.png", width: 100%)), clip: true)
 ]
 
-#focus-slide(align: center)[
-  #set text(font: "libertinus serif", size: 73pt)
-  _That's all, folks!_
+#focus-slide(align: top, config: config-page(fill: white, margin: 0em))[
+  #figure(image("assets/thats all folks.svg", width: 101%))
+  #place(bottom+right, figure(image("assets/bongolove.png", width: 10%)))
 ]
 
 #show: appendix

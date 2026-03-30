@@ -82,7 +82,7 @@
 #speaker-note[
   Je vais essayer de parler des nouvelles pratiques dans la gestion des déploiements.
 
-  *Disclaimer :*
+  Disclaimer :
 
   - Cette présentation n'est pas exhaustive
   - Je vais faire des approximations pour simplifier
@@ -118,15 +118,12 @@
 
     Qu'est-ce que je fais ?
 
-    - On *évalue* le *périmètre de la panne*, ce qui casse
-    - On *détermine* les *conditions* dans lesquelles ça *arrive*
-    - On *évalue* les *risques* possibles
-    - On *détermine* le *coût* pour *corriger* : temps de debug, nouveau déploiement…
+    - On évalue le périmètre de la panne, ce qui casse
+    - On détermine les conditions dans lesquelles ça arrive
+    - On évalue les risques possibles
+    - On détermine le coût pour corriger : temps de debug, nouveau déploiement…
 
-    Enfin, on *décide* de *l'action à prendre* et *quand.*
-
-    *Différents scénarios:*
-    Que se passe-t-il si elle est cassée…
+    Enfin, on décide de l'action à prendre et quand.
   ]
 ]
 
@@ -170,18 +167,22 @@
 - _But it *doesn't* work *only* on my machine_ #super[#strike[TM]]
 
   #speaker-note[
+    Différents scénarios:
+
+    Que se passe-t-il si elle est cassée…
+
     + Au déploiement:
       - facile, on tente de rollback hein ? Oui, mais si on avait changé de DB en même temps ?
     + 4j :
       - Est-ce que c'est vraiment lié au dernier déploiement ?
       - Une panne lente ?
-      - Un changement _stateful_ ? 
+      - Un changement stateful ? 
     + Au rollback :
       - Un truc mal rollback ?
       - Un état persistant ?
     + It works on my machine:
       - Quoi ? C'est pas ISO prod ??
-    + It *doesn't* work *only* on my machine:
+    + It doesn't work only on my machine:
       - Quoi ? C'est vraiment pas ISO prod ??
   ]
 ]
@@ -199,20 +200,20 @@
   #speaker-note[
     Electronic Numerical Integrator And Computer - 1er ordi Turing complete
 
-    *C'est quoi l'infra ?*
+    C'est quoi l'infra ?
 
     Infrastructure :
-    - _structure_ -> *relation* entre les *éléments* d'un système
-    - _infra_ -> « _*sous*_ », ce qui supporte
-    _infrastructure_ -> tout ce qui *supporte* un *système* (ex: -> fondations d'un bâtiment)
+    - structure -> relation entre les éléments d'un système
+    - infra -> « sous », ce qui supporte
+    infrastructure -> tout ce qui supporte un système (ex: -> fondations d'un bâtiment)
 
     Ici : infrastructure = bâtiment, l'ENIAC littéralement une pièce
 
-    *NEXT*
+    ---
 
-    *Ma prod est en panne ?*
+    La problématique : ma prod est en panne.
 
-    On se déplace *physiquement*, on vérifie les *branchements*, on *documente* les *nouveaux branchements*, on *vérifie* les *entrées-sorties* (périphériques) sur *cartes perforées*, on vérifie la *configuration*…
+    On se déplace physiquement, on vérifie les branchements, on documente les nouveaux branchements, on vérifie les entrées-sorties (périphériques) sur cartes perforées, on vérifie la configuration…
   ]
 ]
 
@@ -222,7 +223,7 @@
   #figure(image("assets/datacenter_rack.jpg", width: 70%))
 
   #speaker-note[
-    *On premise*: on est responsable de notre serveur, de notre baie, de notre emplacement rack
+    On premise: on est responsable de notre serveur, de notre baie, de notre emplacement rack
 
     En collocation, on n'est plus responsable du bâtiment on loue un emplacement rack,
 
@@ -262,25 +263,19 @@
   )
 
   #speaker-note[
-    *Cas d'usage* :
+    Cas d'usage :
 
     On veut une marketplace : on la déploie sur serveur dédié
-
-    *NEXT*
 
     Elle tombe en panne : il faut prendre ses petites jambes, aller regarder ce qu'il se passe : en attendant le service est indispo.
 
     Solution ?
 
-    *NEXT*
+    On l'installe sur plusieurs serveurs
 
-    On l'*installe* sur *plusieurs serveurs*
+    Ça tombe en panne : on enquête, mais en attendant l'utilisateur peut toujours accéder à un autre serveur.
 
-    Ça tombe en panne : on enquête, mais en attendant l'utilisateur peut toujours accéder à un autre serveur
-
-    *NEXT*
-
-    Notre marketplace tourne sur un Cluster de serveurs
+    On dit que notre marketplace tourne sur un « cluster » de serveurs.
   ]
 ])
 
@@ -306,7 +301,7 @@
     On prend soin de nos gambettes, on veut pas courir partout pour installer ni pour réparer
 
     On loue l'infra, on s'occupe du logiciel :
-    *Infra-as-a-service* (le hardware est fournit, tu gères l'OS)
+    Infra-as-a-service (le hardware est fournit, tu gères l'OS)
   ]
 ]
 
@@ -425,15 +420,15 @@
     
     Parmi ces VM -> ma marketplace
 
-    Utilisateur accède directement ma marketplace via la VM -> même chose qu'avant *SAUF QUE*
+    Utilisateur accède directement ma marketplace via la VM -> même chose qu'avant SAUF QUE
 
     Si VM 1 en panne, pas besoin d'accéder au datacenter, on peut la recréer, la réinitialiser ou la redéployer ailleurs sans avoir besoin d'aller sur place
 
-    On appelle aussi ça un *VPS*
+    On appelle aussi ça un VPS
 
     ------
 
-    Pourquoi je parle pas de SSH sur srv physique ? Parce qu'on parle d'infra (db, charges de travail,config réseau), pas JUSTE du système
+    Pourquoi je parle pas de SSH sur serveur physique ? Parce qu'on parle d'infra (db, charges de travail, config réseau), pas juste du système
 
     -- Oui mais et moi mon serveur dédié jamais eu besoin d'aller sur place -> le hardware a jamais lâché et eu besoin ticket ?
     -- Oui mais ça arrive jamais -> Si ça lâche une fois en 10 ans, il suffit d'avoir 10 serveurs pour qu'il y en ait 1 qui lâche par an, 100 serveurs et quasiment une panne tous les mois
@@ -509,8 +504,6 @@
 
     Eh bien pas de downtime puisqu'on a toujours le quorum
 
-    NEXT
-
     Ça déploie un nouveau serveur
 
     ---
@@ -519,7 +512,7 @@
 
     Ça veut dire déployer un OS entier…
 
-    *MAIS* on peut trouver encore mieux
+    Mais on peut trouver encore mieux
   ]
 ]
 
@@ -796,7 +789,7 @@
   To deploy an on-premise infrastructure, there is a whole series of processes to follow in order to acquire, install, start or maintain servers.
 
   #speaker-note[
-Un paradigme est — en épistémologie et dans les sciences humaines et sociales — une représentation du monde, une manière de voir les choses, un modèle cohérent du monde qui repose sur un fondement défini (matrice disciplinaire, modèle théorique, courant de pensée). 
+    Un paradigme est — en épistémologie et dans les sciences humaines et sociales — une représentation du monde, une manière de voir les choses, un modèle cohérent du monde qui repose sur un fondement défini (matrice disciplinaire, modèle théorique, courant de pensée). 
 
     Rappel que la problématique : ma prod est en panne, je sais pas si c'est infra ou software, je sais pas quoi faire, je veux être autonome
 
@@ -867,11 +860,9 @@ It means to describe a *final state* rather than the steps to reach it.
   ])
 
   #speaker-note[
-    Ça, c'est Alex qui l'a dit
+    Alex nous dit…
 
-    *NEXT*
-
-    Non, en fait c'est moi :D
+    Non j'ai menti, c'est moi :D
   ]
 ]
 
@@ -973,7 +964,7 @@ It means to describe a *final state* rather than the steps to reach it.
   An action is *idempotent* when it has the same effect, whether called once or repeated.
 
   #speaker-note[
-    - Si on relance plusieurs fois `docker build`, ça existe déjà et ça fait rien de plus : on parle d'IDEMPOTENCE (ex: cliquer sur un bouton pour valider le panier)
+    - Si on relance plusieurs fois `docker build`, ça existe déjà et ça fait rien de plus : on parle d'« idempotence » (ex: cliquer sur un bouton pour valider le panier)
 
     Il faut comprendre que derrière toute étape déclarative se cachent des opérations impératives. C'est une question de responsabilités.
 
@@ -1017,7 +1008,7 @@ It means to describe a *final state* rather than the steps to reach it.
       - le `package.json` déclare la dépendance
       - `npm install` installe à partir de la déclaration
 
-      OUI MAIS et les màjs automatiques ?
+    Oui mais et les màjs automatiques ?
   ]
 ]
 
@@ -1108,11 +1099,11 @@ It means to describe a *final state* rather than the steps to reach it.
   ]
 
   #speaker-note[
-    `npm install` n'est PAS strictement reproductible : il va chercher les updates mineures et _peut_ modifier le lockfile
+    `npm install` n'est pas strictement reproductible : il va chercher les updates mineures et _peut_ modifier le lockfile
 
-    pour des install strictement reproductibles à partir du `package.json` & lock : `npm ci`
+    Pour des install strictement reproductibles à partir du `package.json` & lock : `npm ci`
 
-    on parle aussi de « Déterminisme »
+    On parle aussi de « déterminisme »
 
     ---
 
@@ -1183,7 +1174,7 @@ It means to describe a *final state* rather than the steps to reach it.
   )
 
   #speaker-note[
-    pour revenir à notre infra
+    Pour revenir à notre infra…
   ]
 ]
 
@@ -1234,9 +1225,7 @@ It means to describe a *final state* rather than the steps to reach it.
 
     ---
 
-    Il faut faire attention :
-
-    - Ressortir la blague de Terraform exécuté par Claude qui wipe le Cloud, les DB, les backups de DB
+    Il faut faire attention (ex.: Terraform exécuté par Claude qui wipe le Cloud, les DB, les backups de DB)
 
     Analogie :
 
@@ -1277,9 +1266,7 @@ It means to describe a *final state* rather than the steps to reach it.
 
     C'est possible de tester les changements infra de manière autonome avant même que ça parte en prod, en quelques lignes
 
-    MAIS
-
-    Y'a pas moyen que ça serve pour autre chose que l'infra ?
+    Mais y'a pas moyen que ça serve pour autre chose que l'infra ?
   ]
 ]
 
@@ -1303,7 +1290,7 @@ It means to describe a *final state* rather than the steps to reach it.
 == Declarative Toolchain
 
 #slide(align: top)[
-  #only("6-")[
+  #only("8-")[
     #place(top+right, figure(image("assets/nixos.svg", width: 14%)))
   ]
   #v(1.5em)
@@ -1444,13 +1431,13 @@ It means to describe a *final state* rather than the steps to reach it.
   ]
 
   #speaker-note[
-    - on veut éviter sillo *dev* / sysadmin
-    - on veut que les devs contrôlent mieux l'env final
-    - dev plus iso prod possible = good
+    - On veut éviter sillo *dev* / sysadmin
+    - On veut que les devs contrôlent mieux l'env final
+    - Dev plus iso prod possible = good
 
-    1. originellement, dev -> cahier des charges -> ops => source d'erreur
-    2. ensuite, environnements devs locaux + en + proches
-    3. idéal : les devs gèrent les environnements et leurs specs eux-mêmes au plus proche du code
+    1. Originellement, dev -> cahier des charges -> ops => source d'erreur
+    2. Ensuite, environnements devs locaux + en + proches
+    3. Idéal : les devs gèrent les environnements et leurs specs eux-mêmes au plus proche du code
 
     Que se passe-t-il quand on se rend compte que les spec machine ne suivent pas ? On refait potentiellement toute la boucle
     (c'est un cycle en v simplifié le schéma)
@@ -1553,27 +1540,27 @@ It means to describe a *final state* rather than the steps to reach it.
   #speaker-note[
     On reprend ce qu'on avait avant (métier qui parle aux leads qui discute avec les devs)
 
-    NEXT
+    ---
 
     Et de l'autre côté, on a les ops qui _préparent_ l'infra
 
-    NEXT
+    ---
 
     Pour que les devs puissent déployer des ressources eux-même
 
-    NEXT
+    ---
 
     Qu'ils pourront tester
 
-    NEXT
+    ---
 
     Ça permettra aux devs et aux leads de faire des revues d'infra sur des PR par exemple
 
-    NEXT
+    ---
 
     Et à la fin n'importe qui peut exécuter des tests end-to-end, y compris sur des feature branches
 
-    NEXT
+    ---
 
     Le fait de rapprocher l'infra du dev, le dev de l'infra, c'est ce qu'on peut appeler du… DEVOPS
 
